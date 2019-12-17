@@ -1,0 +1,112 @@
+<?php
+{{namespace}};
+
+use Kunsal\LaravelModular\Core\Controllers\CoreController;
+use App\Modules\{{plural}}\Models\{{name}};
+use Kris\LaravelFormBuilder\FormBuilder;
+use App\Modules\{{plural}}\Forms\{{name}}Form;
+use Yajra\Datatables\Datatables;
+use Kris\LaravelFormBuilder\FormBuilderTrait;
+use Illuminate\Http\Request;
+
+class {{class}} extends BackendController{
+    use FormBuilderTrait;
+
+    public function __construct(){
+        parent::__construct();
+    }
+
+    /*
+     * Displays the index page of the class
+    */
+    public function index(){
+        return view('{{plural}}::index', $this->data);
+    }
+
+    /*
+     * Fetch data from the database and prepare to be used on index page datatable
+    */
+    public function data(){
+        return Datatables::of({{name}}::query())
+            ->addColumn('actions', function({{name}} ${{lowername}}){
+                return '<a href="'.route('edit.{{lowerplural}}', ${{lowername}}->id).'" class="btn btn-xs btn-primary">Edit</a>
+                        '.delete_link(route('delete.{{lowerplural}}', ${{lowername}}->id));
+            })
+            ->rawColumns(['actions'])
+            ->make(true);
+    }
+
+    /*
+     * Create method. Uses FormBuilder class to create the forms for the view
+    */
+    public function create(FormBuilder $formBuilder){
+        $this->data['form'] = $formBuilder->create({{name}}Form::class, [
+                                  'method' => 'POST',
+                                  'url' => route('store.{{lowerplural}}')
+                              ]);
+        return view('{{plural}}::form', $this->data);
+    }
+
+    /*
+     * Stores the form data into the database
+    */
+    public function store(Request $request){
+        $form = $this->form({{name}}Form::class);
+        // It will automatically use current request, get the rules, and do the validation
+        if (!$form->isValid()) {
+            return redirect()->back()->withErrors($form->getErrors())->withInput();
+        }
+        {{name}}::create($request->all());
+        if($request->has('save_exit')){
+            return redirect()->route('view.{{lowerplural}}')->with('status', '{{name}} created successfully');
+        }
+        return redirect()->back()->with('status', '{{name}} created successfully');
+    }
+
+    /*
+     * Edit method
+    */
+    public function edit({{name}} ${{lowername}}, FormBuilder $formBuilder){
+        $this->data['{{lowername}}'] = ${{lowername}};
+        $this->data['form'] = $formBuilder->create({{name}}Form::class, [
+                                              'method' => 'PATCH',
+                                              'url' => route('update.{{lowerplural}}', ${{lowername}}->id),
+                                              'model' => ${{lowername}},
+                                          ]);
+        return view('{{plural}}::form', $this->data);
+    }
+
+    /*
+     * Update method
+    */
+    public function update(Request $request, {{name}} ${{lowername}}){
+        $form = $this->form({{name}}Form::class);
+        // It will automatically use current request, get the rules, and do the validation
+        if (!$form->isValid()) {
+            return redirect()->back()->withErrors($form->getErrors())->withInput();
+        }
+        ${{lowername}}->fill($request->all())->save();
+        if($request->has('save_exit')){
+        return redirect()->route('view.{{lowerplural}}')->with('status', '{{name}} updated successfully');
+        }
+        return redirect()->back()->with('status', '{{name}} updated successfully');
+    }
+
+    /*
+     * Delete Method
+    */
+    public function destroy({{name}} ${{lowername}}){
+        ${{lowername}}->delete();
+        return redirect()->back()->with('status', '{{name}} deleted successfully');
+    }
+
+    /*
+     * Show Method
+    */
+    // Todo: Uncomment this function, remove show from except array in routes file and create view.blade.php file in app/Modules/{{name}}/Views
+    /*public function show({{name}} ${{lowername}}){
+        $this->data['{{lowername}}'] = ${{lowername}};
+        return view('{{name}}::view', $this->data);
+    }*/
+
+}

@@ -1,0 +1,45 @@
+<?php
+
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class CreateSettingsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('settings', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('app_name')->default('Kaytivity App');
+            $table->string('tagline')->nullable();
+            $table->text('app_description')->nullable();
+            $table->string('email_address')->default('email@app.com');
+            $table->string('phone_number')->default('08012345678');
+            $table->string('address')->default('123 street, City, State');
+            $table->string('logo')->default('default.jpg');
+            $table->string('facebook')->nullable();
+            $table->string('twitter')->nullable();
+            $table->string('google_plus')->nullable();
+            $table->string('youtube')->nullable();
+            $table->string('instagram')->nullable();
+            $table->string('whatsapp')->nullable();
+            $table->string('alt_phone')->nullable();
+            $table->string('alt_email')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::drop('settings');
+    }
+}

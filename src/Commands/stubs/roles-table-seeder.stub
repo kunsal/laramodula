@@ -1,0 +1,37 @@
+<?php
+
+use Illuminate\Database\Seeder;
+use Cartalyst\Sentinel\Laravel\Facades\Sentinel;
+
+class RolesTableSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        $role = Sentinel::getRoleRepository()->createModel();
+        $role->insert(array(
+            array(
+                'name' => 'Administrator',
+                'slug' => 'administrator',
+                'permissions' => json_encode(array()),
+                'can_edit' => 0
+            ),
+            array(
+                'name' => 'Manager',
+                'slug' => 'manager',
+                'permissions' => json_encode(array()),
+                'can_edit' => 0
+            ),
+            array(
+                'name' => 'Editor',
+                'slug' => 'editor',
+                'permissions' => json_encode(array()),
+                'can_edit' => 0
+            )
+        ));
+    }
+}
