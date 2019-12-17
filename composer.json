@@ -1,0 +1,31 @@
+{
+    "name": "kunsal/laramodula",
+    "description": "This package will scaffold a modular project structure in laravel",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Olakunle Salami",
+            "email": "kunsal2003@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Kunsal\\Laramodula\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Kunsal\\Laramodula\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Kunsal\\Laramodula\\LaramodulaServiceProvider"
+            ]
+        }
+    }
+}
