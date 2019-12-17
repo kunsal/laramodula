@@ -1,0 +1,13 @@
+<?php
+
+Route::group(['middleware' => ['web'], 'namespace' => 'App\Modules\{{plural}}\Http\Controllers'], function ()
+{
+	Route::get('{{name}}/data', '{{plural}}Controller@data')->name('{{name}}.data');
+    Route::get('{{name}}', '{{plural}}Controller@index')->name('view.{{name}}');
+    Route::get('{{name}}/create', '{{plural}}Controller@create')->name('create.{{name}}');
+    Route::get('{{name}}/{page}/edit', '{{plural}}Controller@edit')->name('edit.{{name}}');
+    Route::post('{{name}}/store', '{{plural}}Controller@store')->name('store.{{name}}');
+    Route::patch('{{name}}/{page}', '{{plural}}Controller@update')->name('update.{{name}}');
+    Route::delete('{{name}}/{page}', '{{plural}}Controller@destroy')->name('delete.{{name}}');
+
+});

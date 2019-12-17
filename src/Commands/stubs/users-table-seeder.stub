@@ -1,0 +1,27 @@
+<?php
+
+use Illuminate\Database\Seeder;
+use Cartalyst\Sentinel\Laravel\Facades\Sentinel;
+
+class UsersTableSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        $user = Sentinel::register(array(
+            'email' => 'admin@admin.com',
+            'first_name' => 'Super',
+            'last_name' => 'Admin',
+            'password' => 'admin'
+        ));
+
+        $role = Sentinel::findRoleByName('Administrator');
+
+        $role->users()->attach($user);
+
+    }
+}

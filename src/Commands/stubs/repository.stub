@@ -1,0 +1,16 @@
+<?php
+namespace {{namespace}};
+
+use App\Modules\{{plural}}\Models\{{name}};
+
+use App\Modules\Core\Repositories\Eloquent\Repository;
+
+use App\Modules\{{plural}}\Repositories\{{name}}Interface;
+
+class Eloquent{{name}} extends Repository implements {{name}}Interface {
+
+	function model() {
+		return {{name}}::class;
+	}
+
+}

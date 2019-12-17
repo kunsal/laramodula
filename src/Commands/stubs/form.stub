@@ -1,0 +1,44 @@
+@extends('layouts.master-form')
+
+@section('page-name', '{{name}}')
+
+@section('actions')
+    <a href="{{route('view.{{lowerplural}}')}}" class="btn btn-warning">Go Back</a>
+@endsection
+
+@section('page-content')
+    <div class="row">
+            <div class="col-md-12">
+                <h2 class="page-title">
+                    {{ __('{{Page Name}}') }} <small>{{ __('') }}</small>
+                    <a href="{{route('view.{{lowerplural}}')}}" class="btn btn-warning pull-right">Go Back</a>
+                </h2>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <section class="widget">
+                    <div class="body">
+                        {!! form_start($form) !!}
+                        {!! form_rest($form) !!}
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-success">Save</button>
+                            <input type="submit" name="save_exit" class="btn btn-primary" value="Save & Exit" />
+                            <a href="{{route('view.{{lowerplural}}')}}" class="btn btn-warning">Go Back</a>
+                        </div>
+                        {!! form_end($form)!!}
+                    </div>
+                </section>
+            </div>
+        </div>
+
+@endsection
+
+@push('page-css')
+
+@endpush
+
+@push('page-js')
+
+@endpush

@@ -2,11 +2,13 @@
 namespace Kunsal\Laramodula;
 
 use Illuminate\Support\ServiceProvider;
+use Kunsal\Laramodula\Commands\GenerateModule;
 
 class LaramodulaServiceProvider extends ServiceProvider
 {
     public function boot() {
-       $this->loadRoutesFrom(__DIR__.'/web.php');
+        $this->commands([GenerateModule::class]);
+        $this->loadRoutesFrom(__DIR__.'/web.php');
     }
 
     public function register()

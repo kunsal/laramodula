@@ -1,0 +1,14 @@
+<?php
+Route::group(['middleware' => ['web'], 'prefix' => config('cms.admin_uri'), 'namespace' => 'App\Modules\Authenticators\Http\Controllers'], function ()
+{
+    Route::get('login', 'LoginController@showLoginForm')->name('login.form');
+    Route::post('login', 'LoginController@login')->name('login');
+    Route::post('logout', 'LoginController@logout')->name('logout');
+
+    Route::get('forgot-password', 'ForgotPasswordController@showLinkRequestForm')->name('forgot.password');
+    Route::post('forgot-password', 'ForgotPasswordController@sendResetLinkEmail')->name('post.forgot.password');
+
+    Route::get('reset-password/{token}', 'ResetPasswordController@showResetForm')->name('reset.password');
+    Route::post('reset-password/{token}', 'ResetPasswordController@reset')->name('');
+
+});

@@ -1,0 +1,22 @@
+<?php
+namespace {{namespace}};
+
+use Illuminate\Support\ServiceProvider;
+
+class {{plural}}ServiceProvider extends ServiceProvider{
+
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        // Bind {{name}} Interface and Repository
+
+    }
+
+    public function boot(){
+        // todo code goes here
+    }
+}
