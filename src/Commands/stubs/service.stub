@@ -1,0 +1,14 @@
+<?php
+namespace {{namespace}}\Services;
+
+use Illuminate\Database\Eloquent\Model;
+use {{namespace}}\Models\{{name}}Interface;
+
+class {{class}} {
+    protected ${{lowername}};
+
+	public function __construct({{name}}Interface ${{lowername}}) {
+        $this->{{lowername}} = ${{lowername}};
+	}
+
+}

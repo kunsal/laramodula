@@ -65,8 +65,14 @@ class GenerateModule extends Command
             $this->error($module . ' module already exists');
             exit;
         }
-
+        $this->makeModel($module, $module_path,$namespace, $schema);
+        $this->makeInterface($module, $module_path,$namespace);
+        $this->makeProvider($module, $module_path,$namespace);
         $this->makeController($module, $module_path, $namespace, $empty, $type);
+        $this->makeService($module, $module_path, $namespace);
+        $this->makeEventProvider($module, $module_path, $namespace);
+        $this->makeResources($module_path, $module);
+        $this->empty_folders($module_path);
     }
 
     // Get stub file
@@ -74,14 +80,10 @@ class GenerateModule extends Command
         return __DIR__ . "/stubs/{$filename}.stub";
     }
 
-    protected function makeController($module, $module_path,$namespace, $empty=false, $type='')
+    protected function makeController($module, $module_path, $namespace, $empty=true, $type='')
     {
         // The stub file
-        if($empty == true){
-            $stub_path = $this->moduleStub('controllers');
-        }else{
-            $stub_path = $this->moduleStub('resource-controllers');
-        }
+        $stub_path = $this->moduleStub('controllers');
 
         // Data to replace in stub
         $plural = Str::plural($module);
@@ -106,16 +108,42 @@ class GenerateModule extends Command
         $this->file->put("{$controller_path}/{$class}.php", $stub);
 
         file_put_contents("{$module_path}/Http/routes.php", ($empty == false) ? $this->resource_route($plural) : $this->route($plural));
-        //$this->makeRequests($module, $module_path, $namespace);
+        $this->makeRequests($module, $module_path, $namespace);
     }
 
-    protected function makeModel($module, $module_path,$namespace, $schema=null, $form=null)
+    protected function makeService($module, $module_path, $namespace)
+    {
+        // The stub file
+        $stub_path = $this->moduleStub('service');
+
+        // Data to replace in stub
+        $plural = Str::plural($module);
+        $lowerplural = strtolower($plural);
+        $name = ucfirst($module);
+        $lowername = strtolower($name);
+        $class =  "Create".$name."Service";
+
+        // Path to directory to create file in
+        $service_path = "{$module_path}/Http/Services";
+        // Create directory with read, write, execute
+        mkdir($service_path, 0777, true);
+        $stub = $this->file->get($stub_path);
+        $stub = $this->replaceClass($stub, $class);
+        $stub = $this->replaceNamespace($stub, $namespace);
+        $stub = $this->replaceName($stub, $name);
+        $stub = $this->replaceLowerName($stub, $lowername);
+        $stub = $this->replacePlural($stub, $plural);
+
+        $stub = $this->replaceLowerPlural($stub, $lowerplural);
+
+        $this->file->put("{$service_path}/{$class}.php", $stub);
+    }
+
+    protected function makeModel($module, $module_path,$namespace, $schema=null)
     {
         $plural = Str::plural($module);
         $class = ucfirst($module);
-        $name_space = $namespace;
-        $namespace = "namespace {$name_space}\\Models";
-        $model_path = "{$module_path}/Models";
+        $model_path = "{$module_path}/Models/Repositories";
         mkdir($model_path, 0777, true);
         // The stub file
         $stub_path = $this->moduleStub('model');
@@ -136,12 +164,29 @@ class GenerateModule extends Command
             $this->call('make:migration:schema', ['name' => 'create_'.strtolower($plural).'_table', '--schema' => $schema, '--model'=>0]);
         }
 
-        if(!is_null($form)){
-            $this->call('make:form', ['name' => $name_space.'\\Forms\\'.$class.'Form', '--fields' => $form]);
-        }else{
-            $this->call('make:form', ['name' => $name_space.'\\Forms\\'.$class.'Form']);
-        }
+//        if(!is_null($form)){
+//            $this->call('make:form', ['name' => $name_space.'\\Forms\\'.$class.'Form', '--fields' => $form]);
+//        }else{
+//            $this->call('make:form', ['name' => $name_space.'\\Forms\\'.$class.'Form']);
+//        }
 
+    }
+
+    public function makeInterface($module, $module_path,$namespace) {
+        $plural = Str::plural($module);
+        $class = ucfirst($module).'Interface';
+        $interface_path = "{$module_path}/Models";
+        if (!$this->file->exists($interface_path)) {
+            mkdir($interface_path, 0777, true);
+        }
+        // The stub file
+        $stub_path = $this->moduleStub('interface');
+
+        $stub = $this->file->get($stub_path);
+        $stub = $this->replaceClass($stub, $class);
+        $stub = $this->replaceNamespace($stub, $namespace);
+
+        $this->file->put("{$interface_path}/{$class}.php", $stub);
     }
 
     protected function makePresenter($module, $module_path,$namespace)
@@ -181,7 +226,7 @@ class GenerateModule extends Command
     protected function makeEventProvider($module, $module_path,$namespace)
     {
         $plural = Str::plural($module);
-        $namespace = $namespace.'\\Providers';
+        $namespace = $namespace;
         $name = ucfirst($module);
 
         $stub_path = $this->moduleStub('event-provider');

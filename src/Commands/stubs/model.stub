@@ -1,9 +1,10 @@
 <?php
-{{namespace}};
+namespace {{namespace}}\Models\Repositories;
 
 use Illuminate\Database\Eloquent\Model;
+use {{namespace}}\Models\{{class}}Interface;
 
-class {{class}} extends Model{
+class {{class}} extends AbstractModel implements {{class}}Interface {
 
 	protected $guarded = ['_token', 'save_exit'];
 

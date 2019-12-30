@@ -1,7 +1,9 @@
 <?php
-namespace {{namespace}};
+namespace {{namespace}}\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use {{namespace}}\Models\{{name}}Interface;
+use {{namespace}}\Models\Repositories\{{name}}
 
 class {{plural}}ServiceProvider extends ServiceProvider{
 
@@ -13,7 +15,10 @@ class {{plural}}ServiceProvider extends ServiceProvider{
     public function register()
     {
         // Bind {{name}} Interface and Repository
-
+        $this->app->bind(
+            {{name}}Interface::class,
+            {{name}}
+        );
     }
 
     public function boot(){
