@@ -207,7 +207,7 @@ class GenerateModule extends Command
     protected function makeProvider($module, $module_path,$namespace)
     {
         $plural = Str::plural($module);
-        $namespace = $namespace.'\\Providers';
+
         $name = ucfirst($module);
 
         $stub_path = $this->moduleStub('provider');
