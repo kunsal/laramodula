@@ -1,13 +1,11 @@
 <?php
-namespace {{namespace}};
+namespace {{namespace}}\Repositories\Eloquent;
 
 use App\Modules\{{plural}}\Models\{{name}};
-
-use App\Modules\Core\Repositories\Eloquent\Repository;
-
+use App\Modules\Core\Repositories\AbstractRepository;
 use App\Modules\{{plural}}\Repositories\{{name}}Interface;
 
-class Eloquent{{name}} extends Repository implements {{name}}Interface {
+class {{name}}Repository extends AbstractRepository implements {{name}}Interface {
 
 	function model() {
 		return {{name}}::class;

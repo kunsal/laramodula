@@ -18,7 +18,7 @@ class GenerateModule extends Command
      *
      * @var string
      */
-    protected $signature = 'make:module {name} {--schema=} {--empty} {--type=} {--form=}';
+    protected $signature = 'make:module {name} {--form=} {--migration} {--resource} {--type=} ';
 
     /**
      * The console command description.
@@ -50,9 +50,9 @@ class GenerateModule extends Command
         if (!$this->file->exists('app/Modules')) {
             $this->file->makeDirectory('app/Modules');
         }
-        $module = $this->argument('name');
-        $schema = $this->option('schema');
-        $empty = $this->option('empty');
+        $module = ucfirst($this->argument('name'));
+        $migration = $this->option('migration');
+        $resource = $this->option('resource');
         $type = $this->option('type');
         $form = $this->option('form');
 
@@ -65,14 +65,19 @@ class GenerateModule extends Command
             $this->error($module . ' module already exists');
             exit;
         }
-        $this->makeModel($module, $module_path,$namespace, $schema);
+        $this->makeController($module, $module_path, $namespace, $resource);
+        $this->makeModel($module, $namespace, $migration, $form);
         $this->makeInterface($module, $module_path,$namespace);
+        $this->makeEloquentRepo($module, $module_path, $namespace);
         $this->makeProvider($module, $module_path,$namespace);
-        $this->makeController($module, $module_path, $namespace, $empty, $type);
         $this->makeService($module, $module_path, $namespace);
         $this->makeEventProvider($module, $module_path, $namespace);
-        $this->makeResources($module_path, $module);
+
         $this->empty_folders($module_path);
+
+
+        $this->makeResources($module_path, $module);
+
     }
 
     // Get stub file
@@ -80,35 +85,37 @@ class GenerateModule extends Command
         return __DIR__ . "/stubs/{$filename}.stub";
     }
 
-    protected function makeController($module, $module_path, $namespace, $empty=true, $type='')
+    protected function makeController($module, $module_path, $namespace, $resource)
     {
-        // The stub file
-        $stub_path = $this->moduleStub('controllers');
+        $controller_name = $module.'Controller';
+        $this->call('make:controller', [
+            'name' => $namespace."\\Http\\Controllers\\${controller_name}",
+            '--resource' => $resource
+        ]);
 
-        // Data to replace in stub
-        $plural = Str::plural($module);
-        $lowerplural = strtolower($plural);
-        $class =  $plural."Controller";
-        $name = ucfirst($module);
-        $namespace = "namespace {$namespace}\\Http\\Controllers";
-        $lowername = strtolower($module);
-        // Path to directory to create file in
-        $controller_path = "{$module_path}/Http/Controllers";
-        // Create directory with read, write, execute
-        mkdir($controller_path, 0777, true);
-        $stub = $this->file->get($stub_path);
-        $stub = $this->replaceClass($stub, $class);
-        $stub = $this->replaceNamespace($stub, $namespace);
-        $stub = $this->replaceName($stub, $name);
-        $stub = $this->replaceLowerName($stub, $lowername);
-        $stub = $this->replacePlural($stub, $plural);
-        $stub = $this->replaceType($stub, $type);
-        $stub = $this->replaceLowerPlural($stub, $lowerplural);
-
-        $this->file->put("{$controller_path}/{$class}.php", $stub);
-
-        file_put_contents("{$module_path}/Http/routes.php", ($empty == false) ? $this->resource_route($plural) : $this->route($plural));
+        file_put_contents("{$module_path}/Http/routes.php", ($resource == true) ? $this->resource_route($module) : $this->route($module));
         $this->makeRequests($module, $module_path, $namespace);
+    }
+
+    protected function makeModel($module, $namespace, $migration=false, $form=null)
+    {
+        $this->call('make:model', ['name' => $namespace."\\Models\\${module}"]);
+        $module_plural = Str::plural($module);
+        if($migration) {
+            $migration_path = "app/Modules/${module_plural}/Models/Migrations";
+            $this->file->makeDirectory($migration_path);
+            $this->call('make:migration', [
+                'name' => 'create_'.strtolower($module_plural).'_table',
+                '--create' => strtolower($module_plural),
+                '--path' => $migration_path
+            ]);
+        }
+
+        if(!is_null($form)){
+            $this->call('make:form', ['name' => $namespace.'\\Forms\\'.$module.'Form', '--fields' => $form]);
+        }else{
+            $this->call('make:form', ['name' => $namespace.'\\Forms\\'.$module.'Form']);
+        }
     }
 
     protected function makeService($module, $module_path, $namespace)
@@ -139,48 +146,15 @@ class GenerateModule extends Command
         $this->file->put("{$service_path}/{$class}.php", $stub);
     }
 
-    protected function makeModel($module, $module_path,$namespace, $schema=null)
-    {
-        $plural = Str::plural($module);
-        $class = ucfirst($module);
-        $model_path = "{$module_path}/Models/Repositories";
-        mkdir($model_path, 0777, true);
-        // The stub file
-        $stub_path = $this->moduleStub('model');
-
-        $stub = $this->file->get($stub_path);
-        $stub = $this->replaceClass($stub, $class);
-        $stub = $this->replaceNamespace($stub, $namespace);
-        $stub = $this->replacePlural($stub, $plural);
-        // If user is being generated
-        if(strtolower($module) == 'user'){
-            $stub = str_replace('extends Model', 'extends Authenticable', $stub);
-            $stub = str_replace('Illuminate\Database\Eloquent\Model;', 'Illuminate\Foundation\Auth\User as Authenticable;', $stub);
-        }
-
-        $this->file->put("{$model_path}/{$class}.php", $stub);
-
-        if(!is_null($schema)){
-            $this->call('make:migration:schema', ['name' => 'create_'.strtolower($plural).'_table', '--schema' => $schema, '--model'=>0]);
-        }
-
-//        if(!is_null($form)){
-//            $this->call('make:form', ['name' => $name_space.'\\Forms\\'.$class.'Form', '--fields' => $form]);
-//        }else{
-//            $this->call('make:form', ['name' => $name_space.'\\Forms\\'.$class.'Form']);
-//        }
-
-    }
-
     public function makeInterface($module, $module_path,$namespace) {
         $plural = Str::plural($module);
-        $class = ucfirst($module).'Interface';
-        $interface_path = "{$module_path}/Models";
+        $class = $module.'Interface';
+        $interface_path = "{$module_path}/Repositories";
         if (!$this->file->exists($interface_path)) {
             mkdir($interface_path, 0777, true);
         }
         // The stub file
-        $stub_path = $this->moduleStub('interface');
+        $stub_path = $this->moduleStub('repo-interface');
 
         $stub = $this->file->get($stub_path);
         $stub = $this->replaceClass($stub, $class);
@@ -189,19 +163,21 @@ class GenerateModule extends Command
         $this->file->put("{$interface_path}/{$class}.php", $stub);
     }
 
-    protected function makePresenter($module, $module_path,$namespace)
-    {
-        $class = ucfirst($module)."Presenter";
-        $namespace = $namespace.'\\Presenters';
-        $stub_path = $this->moduleStub('presenter');
-
+    public function makeEloquentRepo($module, $module_path,$namespace) {
+        $plural = Str::plural($module);
+        $class = $module;
+        $repo_path = "{$module_path}/Repositories/Eloquent";
+        if (!$this->file->exists($repo_path)) {
+            mkdir($repo_path, 0777, true);
+        }
+        // The stub file
+        $stub_path = $this->moduleStub('repository');
         $stub = $this->file->get($stub_path);
-        $stub = $this->replaceClass($stub, $class);
+        $stub = $this->replaceName($stub, $class);
+        $stub = $this->replacePlural($stub, $plural);
         $stub = $this->replaceNamespace($stub, $namespace);
 
-        $presenter_path = "{$module_path}/Presenters";
-        mkdir($presenter_path, 0777, true);
-        file_put_contents("{$presenter_path}/{$module}Presenter.php", $stub);
+        $this->file->put("{$repo_path}/{$class}Repository.php", $stub);
     }
 
     protected function makeProvider($module, $module_path,$namespace)
@@ -211,6 +187,7 @@ class GenerateModule extends Command
         $name = ucfirst($module);
 
         $stub_path = $this->moduleStub('provider');
+
 
         $stub = $this->file->get($stub_path);
 
@@ -281,10 +258,6 @@ class GenerateModule extends Command
 
     protected function makeRequests($module, $module_path,$namespace)
     {
-        $namespace = 'App\Modules\\'.Str::plural(ucfirst($module)).'\Http\Requests';
-        $request_path = "{$module_path}/Http/Requests";
-        mkdir($request_path, 0777, true);
-
         foreach(range(1,2) as $number){
             $class = '';
             switch($number){
@@ -295,26 +268,19 @@ class GenerateModule extends Command
                     $class = "Update{$module}Request";
                     break;
             }
-            $stub_path = $this->moduleStub('requests');
-
-            $stub = $this->file->get($stub_path);
-
-            $stub = $this->replaceClass($stub, $class);
-            $stub = $this->replaceNamespace($stub, $namespace);
-
-            file_put_contents("{$request_path}/{$class}.php", $stub);
+            $this->call('make:request', ['name' => $namespace."\\Http\\Requests\\${class}"]);
         }
     }
 
-    private function resource_route($plural)
+    private function resource_route($name)
     {
-        $module = strtolower($plural);
+        $module = Str::plural(strtolower($name));
         $stub_path = $this->moduleStub('resource-route');
 
         $stub = $this->file->get($stub_path);
 
         $stub = $this->replaceName($stub, $module);
-        $stub = $this->replacePlural($stub, $plural);
+        $stub = $this->replacePlural($stub, $name);
 
         return $stub;
     }

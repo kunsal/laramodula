@@ -1,8 +1,7 @@
 <?php
 namespace {{namespace}}\Services;
 
-use Illuminate\Database\Eloquent\Model;
-use {{namespace}}\Models\{{name}}Interface;
+use {{namespace}}\Repositories\{{name}}Interface;
 
 class {{class}} {
     protected ${{lowername}};

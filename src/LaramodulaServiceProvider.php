@@ -28,7 +28,7 @@ class LaramodulaServiceProvider extends ServiceProvider
                 $this->loadTranslationsFrom($translation_path, $module);
             }
             // Autoload Migrations
-            if(is_dir($migration_path = $modules_path.'/'.$module.'/Migrations')){
+            if(is_dir($migration_path = $modules_path.'/'.$module.'/Models/Migrations')){
                 $this->loadMigrationsFrom($migration_path);
             }
         }

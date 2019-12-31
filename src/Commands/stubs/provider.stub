@@ -2,8 +2,8 @@
 namespace {{namespace}}\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use {{namespace}}\Models\{{name}}Interface;
-use {{namespace}}\Models\Repositories\{{name}};
+use {{namespace}}\Repositories\{{name}}Interface;
+use {{namespace}}\Repositories\Eloquent\{{name}}Repository;
 
 class {{plural}}ServiceProvider extends ServiceProvider{
 
@@ -17,7 +17,7 @@ class {{plural}}ServiceProvider extends ServiceProvider{
         // Bind {{name}} Interface and Repository
         $this->app->bind(
             {{name}}Interface::class,
-            {{name}}::class
+            {{name}}Repository::class
         );
     }
 
