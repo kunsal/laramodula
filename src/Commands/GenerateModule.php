@@ -65,6 +65,9 @@ class GenerateModule extends Command
             $this->error($module . ' module already exists');
             exit;
         }
+        if (!$this->file->exists($module_path.'/Core')) {
+            $this->makeCoreModule();
+        }
         $this->makeController($module, $module_path, $namespace, $resource);
         $this->makeModel($module, $namespace, $migration, $form);
         $this->makeInterface($module, $module_path,$namespace);
@@ -295,5 +298,26 @@ class GenerateModule extends Command
         $stub = $this->replaceNamespace($stub, $namespace);
 
         return $stub;
+    }
+
+    private function makeCoreModule() {
+
+        $core_path = 'App/Modules/Core';
+        $this->file->makeDirectory($core_path);
+
+        // Create abstract repository
+        $repo_path = $core_path.'/Repositories';
+        $this->file->makeDirectory($repo_path);
+        $stub_path = $this->moduleStub('abstract-repo');
+        $stub = $this->file->get($stub_path);
+        $this->file->put($repo_path.'/AbstractRepo.php', $stub);
+
+        // Create helper file
+//        $helper_path = $core_path.'/Helpers';
+//        $this->file->makeDirectory($helper_path);
+//        $stub_path = $this->moduleStub('helper');
+//        $stub = $this->file->get($stub_path);
+//        $this->file->put($helper_path.'/helpers.php', $stub);
+
     }
 }

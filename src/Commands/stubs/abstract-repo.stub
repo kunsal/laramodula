@@ -1,0 +1,179 @@
+<?php
+
+namespace App\Modules\Core\Repositories;
+
+
+use Illuminate\Database\Eloquent\Model;
+
+abstract class AbstractRepository {
+
+    /**
+     * The model to execute queries on.
+     *
+     * @var \Illuminate\Database\Eloquent\Model
+     */
+    protected $model;
+
+    /**
+     * Create a new repository instance.
+     *
+     * @param \Illuminate\Database\Eloquent\Model $model The model to execute queries on
+     */
+    public function __construct(Model $model)
+    {
+        $this->model = $model;
+
+    }
+
+    /**
+     * Get a new instance of the model.
+     *
+     * @param  array $attributes
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function getNew(array $attributes = array())
+    {
+        return $this->model->newInstance($attributes);
+    }
+
+    public function with(array $with = array())
+    {
+        return $this->model->with($with);
+    }
+
+    public function findAll(array $with=[], $orderColumn = 'id', $orderDir = 'asc')
+    {
+        $query = $this->with($with);
+
+        $query = $query->orderBy($orderColumn, $orderDir)->get();
+
+        return $query;
+    }
+
+    public function findAllByLike(array $with=[],$value,$column)
+    {
+        $query = $this->with($with);
+
+        $query = $query->where($column,'like',$value.'%')->get();
+
+        return $query;
+    }
+
+    public function findByLimitAndOrder($limit, $orderColumn, $orderDir = 'asc', array $with=[])
+    {
+        $query = $this->with($with);
+        $query =  $query->limit($limit)->orderBy($orderColumn, $orderDir)->get();
+        return $query;
+    }
+
+
+    /*public function findForDataTable($select=null)
+    {
+        $select_array = is_null($select) ? '' : $select;
+        $model = $this->model->get($select_array);
+
+        return $model;
+    }*/
+    public function listAll($key, $value, $default = null)
+    {
+        $model = $this->model->lists($value, $key);
+        if ($default != null) $model = array_add($model, '', $default);
+
+        return $model;
+    }
+
+    public function listModelRelationIds($model, $relation)
+    {
+        $get = $model->$relation()->get()->lists('id');
+
+        return $get;
+        /*
+        $new_array = array();
+        foreach($get as $g){
+            $new_array[] = $g->id;
+        }
+        return $new_array;*/
+    }
+
+    public function delete($id)
+    {
+        $model = $this->findById($id);
+
+        $model->delete($id);
+    }
+
+    public function findById($id)
+    {
+        return $this->model->find($id);
+    }
+
+    public function findBy($where, $value,$single = true)
+    {
+        if(!$single) return $this->model->where($where, $value)->get();
+
+        return $this->model->where($where, $value)->first();
+    }
+
+    public function findBySearch($data)
+    {
+        $model = $this->model;
+
+        return $model->get();
+    }
+
+    public function getYesNo()
+    {
+        return array(
+            ''    => '--select--',
+            'Yes' => 'Yes',
+            'No'  => 'No'
+        );
+    }
+
+    public function getLiveDraft()
+    {
+        return array(
+            '1' => 'Live',
+            '0' => 'Draft'
+        );
+    }
+
+    public function listRange($begin, $end, $default = null)
+    {
+        $range = array_combine($range = range($begin, $end), $range);
+        if ($default != null) $range = array_add($range, '', $default);
+
+        return $range;
+    }
+
+    public function getByPage($page = 1, $limit = 10, $with = array())
+    {
+        $result             = new StdClass;
+        $result->page       = $page;
+        $result->limit      = $limit;
+        $result->totalItems = 0;
+        $result->items      = array();
+
+        $query = $this->with($with);
+
+        $model = $query->skip($limit * ($page - 1))
+            ->take($limit)
+            ->get();
+
+        $result->totalItems = $this->model->count();
+        $result->items      = $model->all();
+
+        return $result;
+    }
+
+    public function listAllWhere($key, $value, array $where)
+    {
+        $model = $this->model->where($where)->lists($value, $key);
+        return $model;
+    }
+
+    public function count() {
+        return $this->model->count();
+    }
+
+}
