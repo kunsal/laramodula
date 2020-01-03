@@ -1,8 +1,9 @@
 <?php
+
 namespace {{namespace}}\Repositories;
 
-interface {{class}} {
-
+interface {{class}}
+{
     public function makeModel();
 
     /**
@@ -51,6 +52,7 @@ interface {{class}} {
      * @return mixed
      */
     public function find($id, $columns = array('*'));
+
     /**
      * @param $attribute
      * @param $value

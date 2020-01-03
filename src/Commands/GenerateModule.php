@@ -3,7 +3,6 @@
 
 namespace Kunsal\Laramodula\Commands;
 
-
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Kunsal\Laramodula\Traits\ReplaceStubTrait;
@@ -45,7 +44,8 @@ class GenerateModule extends Command
      *
      * @return mixed
     */
-    public function handle() {
+    public function handle()
+    {
         // Create Modules folder in laravel app directory
         if (!$this->file->exists('app/Modules')) {
             $this->file->makeDirectory('app/Modules');
@@ -70,21 +70,21 @@ class GenerateModule extends Command
         }
         $this->makeController($module, $module_path, $namespace, $resource);
         $this->makeModel($module, $namespace, $migration, $form);
-        $this->makeInterface($module, $module_path,$namespace);
+        $this->makeInterface($module, $module_path, $namespace);
         $this->makeEloquentRepo($module, $module_path, $namespace);
-        $this->makeProvider($module, $module_path,$namespace);
+        $this->makeProvider($module, $module_path, $namespace);
         $this->makeService($module, $module_path, $namespace);
         $this->makeEventProvider($module, $module_path, $namespace);
 
-        $this->empty_folders($module_path);
+        $this->emptyFolder($module_path);
 
 
         $this->makeResources($module_path, $module);
-
     }
 
     // Get stub file
-    protected function moduleStub($filename){
+    protected function moduleStub($filename)
+    {
         return __DIR__ . "/stubs/{$filename}.stub";
     }
 
@@ -96,15 +96,15 @@ class GenerateModule extends Command
             '--resource' => $resource
         ]);
 
-        file_put_contents("{$module_path}/Http/routes.php", ($resource == true) ? $this->resource_route($module) : $this->route($module));
+        file_put_contents("{$module_path}/Http/routes.php", ($resource == true) ? $this->resourceRoute($module) : $this->route($module));
         $this->makeRequests($module, $module_path, $namespace);
     }
 
-    protected function makeModel($module, $namespace, $migration=false, $form=null)
+    protected function makeModel($module, $namespace, $migration = false, $form = null)
     {
         $this->call('make:model', ['name' => $namespace."\\Models\\${module}"]);
         $module_plural = Str::plural($module);
-        if($migration) {
+        if ($migration) {
             $migration_path = "app/Modules/${module_plural}/Models/Migrations";
             $this->file->makeDirectory($migration_path);
             $this->call('make:migration', [
@@ -114,9 +114,9 @@ class GenerateModule extends Command
             ]);
         }
 
-        if(!is_null($form)){
+        if (!is_null($form)) {
             $this->call('make:form', ['name' => $namespace.'\\Forms\\'.$module.'Form', '--fields' => $form]);
-        }else{
+        } else {
             $this->call('make:form', ['name' => $namespace.'\\Forms\\'.$module.'Form']);
         }
     }
@@ -149,7 +149,8 @@ class GenerateModule extends Command
         $this->file->put("{$service_path}/{$class}.php", $stub);
     }
 
-    public function makeInterface($module, $module_path,$namespace) {
+    public function makeInterface($module, $module_path, $namespace)
+    {
         $plural = Str::plural($module);
         $class = $module.'Interface';
         $interface_path = "{$module_path}/Repositories";
@@ -166,7 +167,8 @@ class GenerateModule extends Command
         $this->file->put("{$interface_path}/{$class}.php", $stub);
     }
 
-    public function makeEloquentRepo($module, $module_path,$namespace) {
+    public function makeEloquentRepo($module, $module_path, $namespace)
+    {
         $plural = Str::plural($module);
         $class = $module;
         $repo_path = "{$module_path}/Repositories/Eloquent";
@@ -183,7 +185,7 @@ class GenerateModule extends Command
         $this->file->put("{$repo_path}/{$class}Repository.php", $stub);
     }
 
-    protected function makeProvider($module, $module_path,$namespace)
+    protected function makeProvider($module, $module_path, $namespace)
     {
         $plural = Str::plural($module);
 
@@ -203,7 +205,7 @@ class GenerateModule extends Command
         file_put_contents("{$provider_path}/{$plural}ServiceProvider.php", $stub);
     }
 
-    protected function makeEventProvider($module, $module_path,$namespace)
+    protected function makeEventProvider($module, $module_path, $namespace)
     {
         $plural = Str::plural($module);
         $namespace = $namespace;
@@ -222,13 +224,13 @@ class GenerateModule extends Command
         file_put_contents("{$provider_path}/{$plural}EventServiceProvider.php", $stub);
     }
 
-    public function empty_folders($module_path)
+    public function emptyFolder($module_path)
     {
         $folders = array(
             'Listeners', 'Traits', 'Events', 'Mail'
         );
 
-        foreach($folders as $folder){
+        foreach ($folders as $folder) {
             $model_path = "{$module_path}/$folder";
             mkdir($model_path, 0777, true);
         }
@@ -259,11 +261,11 @@ class GenerateModule extends Command
         file_put_contents("{$view_path}/form.blade.php", $form_stub);
     }
 
-    protected function makeRequests($module, $module_path,$namespace)
+    protected function makeRequests($module, $module_path, $namespace)
     {
-        foreach(range(1,2) as $number){
+        foreach (range(1, 2) as $number) {
             $class = '';
-            switch($number){
+            switch ($number) {
                 case 1:
                     $class = "Store{$module}Request";
                     break;
@@ -275,7 +277,7 @@ class GenerateModule extends Command
         }
     }
 
-    private function resource_route($name)
+    private function resourceRoute($name)
     {
         $module = Str::plural(strtolower($name));
         $stub_path = $this->moduleStub('resource-route');
@@ -300,7 +302,8 @@ class GenerateModule extends Command
         return $stub;
     }
 
-    private function makeCoreModule() {
+    private function makeCoreModule()
+    {
 
         $core_path = 'App/Modules/Core';
         $this->file->makeDirectory($core_path);
@@ -318,6 +321,5 @@ class GenerateModule extends Command
 //        $stub_path = $this->moduleStub('helper');
 //        $stub = $this->file->get($stub_path);
 //        $this->file->put($helper_path.'/helpers.php', $stub);
-
     }
 }

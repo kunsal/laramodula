@@ -1,6 +1,7 @@
 <?php
 namespace {{namespace}}\Repositories;
 
-interface {{class}} {
+interface {{class}}
+{
 
 }

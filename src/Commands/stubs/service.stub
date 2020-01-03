@@ -1,13 +1,15 @@
 <?php
+
 namespace {{namespace}}\Services;
 
 use {{namespace}}\Repositories\{{name}}Interface;
 
-class {{class}} {
+class {{class}}
+{
     protected ${{lowername}};
 
-	public function __construct({{name}}Interface ${{lowername}}) {
+	public function __construct({{name}}Interface ${{lowername}})
+	{
         $this->{{lowername}} = ${{lowername}};
 	}
-
 }

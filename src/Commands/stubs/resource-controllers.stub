@@ -1,4 +1,5 @@
 <?php
+
 {{namespace}};
 
 use Kunsal\LaravelModular\Core\Controllers\CoreController;
@@ -12,7 +13,8 @@ use Illuminate\Http\Request;
 class {{class}} extends BackendController{
     use FormBuilderTrait;
 
-    public function __construct(){
+    public function __construct()
+    {
         parent::__construct();
     }
 
@@ -26,7 +28,8 @@ class {{class}} extends BackendController{
     /*
      * Fetch data from the database and prepare to be used on index page datatable
     */
-    public function data(){
+    public function data()
+    {
         return Datatables::of({{name}}::query())
             ->addColumn('actions', function({{name}} ${{lowername}}){
                 return '<a href="'.route('edit.{{lowerplural}}', ${{lowername}}->id).'" class="btn btn-xs btn-primary">Edit</a>
@@ -39,7 +42,8 @@ class {{class}} extends BackendController{
     /*
      * Create method. Uses FormBuilder class to create the forms for the view
     */
-    public function create(FormBuilder $formBuilder){
+    public function create(FormBuilder $formBuilder)
+    {
         $this->data['form'] = $formBuilder->create({{name}}Form::class, [
                                   'method' => 'POST',
                                   'url' => route('store.{{lowerplural}}')
@@ -50,14 +54,15 @@ class {{class}} extends BackendController{
     /*
      * Stores the form data into the database
     */
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $form = $this->form({{name}}Form::class);
         // It will automatically use current request, get the rules, and do the validation
         if (!$form->isValid()) {
             return redirect()->back()->withErrors($form->getErrors())->withInput();
         }
         {{name}}::create($request->all());
-        if($request->has('save_exit')){
+        if ($request->has('save_exit')) {
             return redirect()->route('view.{{lowerplural}}')->with('status', '{{name}} created successfully');
         }
         return redirect()->back()->with('status', '{{name}} created successfully');
@@ -66,7 +71,8 @@ class {{class}} extends BackendController{
     /*
      * Edit method
     */
-    public function edit({{name}} ${{lowername}}, FormBuilder $formBuilder){
+    public function edit({{name}} ${{lowername}}, FormBuilder $formBuilder)
+    {
         $this->data['{{lowername}}'] = ${{lowername}};
         $this->data['form'] = $formBuilder->create({{name}}Form::class, [
                                               'method' => 'PATCH',
@@ -79,7 +85,8 @@ class {{class}} extends BackendController{
     /*
      * Update method
     */
-    public function update(Request $request, {{name}} ${{lowername}}){
+    public function update(Request $request, {{name}} ${{lowername}})
+    {
         $form = $this->form({{name}}Form::class);
         // It will automatically use current request, get the rules, and do the validation
         if (!$form->isValid()) {
@@ -95,7 +102,8 @@ class {{class}} extends BackendController{
     /*
      * Delete Method
     */
-    public function destroy({{name}} ${{lowername}}){
+    public function destroy({{name}} ${{lowername}})
+    {
         ${{lowername}}->delete();
         return redirect()->back()->with('status', '{{name}} deleted successfully');
     }
@@ -104,7 +112,8 @@ class {{class}} extends BackendController{
      * Show Method
     */
     // Todo: Uncomment this function, remove show from except array in routes file and create view.blade.php file in app/Modules/{{name}}/Views
-    /*public function show({{name}} ${{lowername}}){
+    /*public function show({{name}} ${{lowername}})
+    {
         $this->data['{{lowername}}'] = ${{lowername}};
         return view('{{name}}::view', $this->data);
     }*/

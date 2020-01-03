@@ -16,7 +16,8 @@
         "yajra/laravel-datatables-oracle": "~9.0"
     },
     "require-dev": {
-        "laracasts/generators": "@dev"
+        "laracasts/generators": "@dev",
+        "squizlabs/php_codesniffer": "^3.0@dev"
     },
     "autoload": {
         "psr-4": {

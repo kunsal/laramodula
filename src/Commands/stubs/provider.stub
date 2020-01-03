@@ -1,12 +1,13 @@
 <?php
+
 namespace {{namespace}}\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use {{namespace}}\Repositories\{{name}}Interface;
 use {{namespace}}\Repositories\Eloquent\{{name}}Repository;
 
-class {{plural}}ServiceProvider extends ServiceProvider{
-
+class {{plural}}ServiceProvider extends ServiceProvider
+{
     /**
      * Register the service provider.
      *
@@ -21,7 +22,8 @@ class {{plural}}ServiceProvider extends ServiceProvider{
         );
     }
 
-    public function boot(){
+    public function boot()
+    {
         // todo code goes here
     }
 }

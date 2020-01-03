@@ -1,23 +1,24 @@
 <?php
-namespace {{namespace}};
 
+namespace {{namespace}};
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider;
 
-class {{plural}}EventServiceProvider extends EventServiceProvider{
-
+class {{plural}}EventServiceProvider extends EventServiceProvider
+{
     protected $listen = [
         'SomeEvent' => [
             'SomeListenter'
         ]
     ];
+
     /**
      * Fire the $listen array in boot
      * @return void
      */
 
-
     public function boot(){
         parent::boot();
     }
 }
+

@@ -1,4 +1,5 @@
 <?php
+
 namespace Kunsal\Laramodula;
 
 use Illuminate\Support\ServiceProvider;
@@ -6,7 +7,8 @@ use Kunsal\Laramodula\Commands\GenerateModule;
 
 class LaramodulaServiceProvider extends ServiceProvider
 {
-    public function boot() {
+    public function boot()
+    {
         $this->commands([GenerateModule::class]);
         $modules_path = app_path('Modules');
 
@@ -21,15 +23,15 @@ class LaramodulaServiceProvider extends ServiceProvider
 //                $this->loadRoutesFrom($routes_path);
 //            }
             // Autoload views
-            if(is_dir($views_path = $modules_path.'/'.$module.'/Resources/Views')){
+            if (is_dir($views_path = $modules_path.'/'.$module.'/Resources/Views')) {
                 $this->loadViewsFrom($views_path, $module);
             }
             // Autoload Translations
-            if(is_dir($translation_path = $modules_path.'/'.$module.'/Resources/Lang')){
+            if (is_dir($translation_path = $modules_path.'/'.$module.'/Resources/Lang')) {
                 $this->loadTranslationsFrom($translation_path, $module);
             }
             // Autoload Migrations
-            if(is_dir($migration_path = $modules_path.'/'.$module.'/Models/Migrations')){
+            if (is_dir($migration_path = $modules_path.'/'.$module.'/Models/Migrations')) {
                 $this->loadMigrationsFrom($migration_path);
             }
         }
