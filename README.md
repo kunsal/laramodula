@@ -57,8 +57,8 @@ You can optionally pass parameters to the generation script like so:
 
     `php artisan make:module Blog --migration --form="title:text, body:textarea"`
     
-  Check [http://kristijanhusak.github.io/laravel-form-builder/](http://kristijanhusak.github.io/laravel-form-builder/) for
-  more form values and implementation of the form builder.
+  Check [https://kristijanhusak.github.io/laravel-form-builder/overview/commands.html](https://kristijanhusak.github.io/laravel-form-builder/overview/commands.html) for
+  more on form field values and implementation of the form builder.
 
 - Make a resource controller with boilerplate code with the flag `--resources`
 
