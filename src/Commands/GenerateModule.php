@@ -284,8 +284,9 @@ class GenerateModule extends Command
 
         $stub = $this->file->get($stub_path);
 
-        $stub = $this->replaceName($stub, $module);
-        $stub = $this->replacePlural($stub, $name);
+        $stub = $this->replaceLowerName($stub, $module);
+        $stub = $this->replacePlural($stub, Str::plural($name));
+        $stub = $this->replaceName($stub, $name);
 
         return $stub;
     }

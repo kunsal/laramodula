@@ -2,5 +2,5 @@
 
 Route::group(['middleware' => ['web'], 'namespace' => 'App\Modules\{{plural}}\Http\Controllers'], function ()
 {
-    Route::resource('{{name}}', '{{plural}}Controller');
+    Route::resource('{{name}}', '{{name}}Controller');
 });

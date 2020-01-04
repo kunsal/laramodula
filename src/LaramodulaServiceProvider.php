@@ -18,10 +18,11 @@ class LaramodulaServiceProvider extends ServiceProvider
         $modules = scandir($modules_path);
 
         foreach ($modules as $module) {
-//            // Autoload routes
-//            if(is_dir($routes_path = $modules_path.'/'.$module.'/Http')){
-//                $this->loadRoutesFrom($routes_path);
-//            }
+            if ($module === '..') continue;
+            // Autoload routes
+            if(is_dir($routes_path = $modules_path.'/'.$module.'/Http')){
+                $this->loadRoutesFrom($routes_path);
+            }
             // Autoload views
             if (is_dir($views_path = $modules_path.'/'.$module.'/Resources/Views')) {
                 $this->loadViewsFrom($views_path, $module);
