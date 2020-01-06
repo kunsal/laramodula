@@ -23,7 +23,7 @@ class LaramodulaServiceProvider extends ServiceProvider
             }
             // Autoload routes
             if (is_dir($routes_path = $modules_path.'/'.$module.'/Http')) {
-                $this->loadRoutesFrom($routes_path);
+                $this->loadRoutesFrom($routes_path.'/routes.php');
             }
             // Autoload views
             if (is_dir($views_path = $modules_path.'/'.$module.'/Resources/Views')) {

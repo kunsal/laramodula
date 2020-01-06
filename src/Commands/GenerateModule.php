@@ -92,8 +92,13 @@ class GenerateModule extends Command
     {
         $controller_name = $module.'Controller';
         $this->call('make:controller', [
-            'name' => $namespace."\\Http\\Controllers\\${controller_name}",
+            'name' => $namespace."\\Http\\Controllers\\{$controller_name}",
             '--resource' => $resource
+        ]);
+
+        $this->call('make:controller', [
+           'name' => $namespace."\\Http\\Controllers\\Frontend\\{$controller_name}",
+           '--resource' => true
         ]);
 
         file_put_contents("{$module_path}/Http/routes.php", ($resource == true) ? $this->resourceRoute($module) : $this->route($module));
@@ -245,7 +250,8 @@ class GenerateModule extends Command
         $lang_path = $module_path.'/Lang/en';
         mkdir($view_path, 0777, true);
         mkdir($lang_path, 0777, true);
-
+        // Make frontend view folder
+        mkdir("{$view_path}/frontend", 0777, true);
         $stub_path = $this->moduleStub('view');
         $form_stub_path = $this->moduleStub('form');
         // Index page stub
@@ -307,14 +313,16 @@ class GenerateModule extends Command
     {
 
         $core_path = 'App/Modules/Core';
-        $this->file->makeDirectory($core_path);
+        if (!$this->file->exists($core_path)) {
+            $this->file->makeDirectory($core_path);
 
-        // Create abstract repository
-        $repo_path = $core_path.'/Repositories';
-        $this->file->makeDirectory($repo_path);
-        $stub_path = $this->moduleStub('abstract-repo');
-        $stub = $this->file->get($stub_path);
-        $this->file->put($repo_path.'/AbstractRepo.php', $stub);
+            // Create abstract repository
+            $repo_path = $core_path.'/Repositories';
+            $this->file->makeDirectory($repo_path);
+            $stub_path = $this->moduleStub('abstract-repo');
+            $stub = $this->file->get($stub_path);
+            $this->file->put($repo_path.'/AbstractRepo.php', $stub);
+        }
 
         // Create helper file
 //        $helper_path = $core_path.'/Helpers';
