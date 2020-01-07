@@ -8,7 +8,8 @@ use App\Modules\{{plural}}\Repositories\{{name}}Interface;
 
 class {{name}}Repository extends AbstractRepository implements {{name}}Interface
 {
-	public function model() {
-		return {{name}}::class;
-	}
+    public function model()
+    {
+        return {{name}}::class;
+    }
 }

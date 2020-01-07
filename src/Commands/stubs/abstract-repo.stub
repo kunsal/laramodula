@@ -21,7 +21,6 @@ abstract class AbstractRepository
     public function __construct(Model $model)
     {
         $this->model = $model;
-
     }
 
     /**
@@ -40,7 +39,7 @@ abstract class AbstractRepository
         return $this->model->with($with);
     }
 
-    public function findAll(array $with=[], $orderColumn = 'id', $orderDir = 'asc')
+    public function findAll($orderColumn = 'id', $orderDir = 'asc', array $with = [])
     {
         $query = $this->with($with);
 
@@ -49,7 +48,7 @@ abstract class AbstractRepository
         return $query;
     }
 
-    public function findAllByLike($value, $column, array $with=[])
+    public function findAllByLike($value, $column, array $with = [])
     {
         $query = $this->with($with);
 
@@ -65,20 +64,12 @@ abstract class AbstractRepository
         return $query;
     }
 
-
-    /*public function findForDataTable($select=null)
-    {
-        $select_array = is_null($select) ? '' : $select;
-        $model = $this->model->get($select_array);
-
-        return $model;
-    }*/
-
     public function listAll($key, $value, $default = null)
     {
         $model = $this->model->lists($value, $key);
-        if ($default != null) $model = array_add($model, '', $default);
-
+        if ($default != null) {
+            $model = array_add($model, '', $default);
+        }
         return $model;
     }
 
@@ -141,8 +132,9 @@ abstract class AbstractRepository
     public function listRange($begin, $end, $default = null)
     {
         $range = array_combine($range = range($begin, $end), $range);
-        if ($default != null) $range = array_add($range, '', $default);
-
+        if ($default != null) {
+            $range = array_add($range, '', $default);
+        }
         return $range;
     }
 
@@ -172,8 +164,8 @@ abstract class AbstractRepository
         return $model;
     }
 
-    public function count() {
+    public function count()
+    {
         return $this->model->count();
     }
 }
-

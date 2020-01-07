@@ -17,8 +17,8 @@ class {{plural}}EventServiceProvider extends EventServiceProvider
      * @return void
      */
 
-    public function boot(){
+    public function boot()
+    {
         parent::boot();
     }
 }
-

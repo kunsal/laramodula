@@ -312,7 +312,7 @@ class GenerateModule extends Command
     private function makeCoreModule()
     {
 
-        $core_path = 'App/Modules/Core';
+        $core_path = 'app/Modules/Core';
         if (!$this->file->exists($core_path)) {
             $this->file->makeDirectory($core_path);
 
