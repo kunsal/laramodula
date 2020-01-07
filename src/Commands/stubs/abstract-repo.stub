@@ -52,12 +52,12 @@ abstract class AbstractRepository
     {
         $query = $this->with($with);
 
-        $query = $query->where($column,'like',$value.'%')->get();
+        $query = $query->where($column, 'like', $value.'%')->get();
 
         return $query;
     }
 
-    public function findByLimitAndOrder($limit, $orderColumn, $orderDir = 'asc', array $with=[])
+    public function findByLimitAndOrder($limit, $orderColumn, $orderDir = 'asc', array $with = [])
     {
         $query = $this->with($with);
         $query =  $query->limit($limit)->orderBy($orderColumn, $orderDir)->get();
@@ -98,9 +98,11 @@ abstract class AbstractRepository
         return $this->model->find($id);
     }
 
-    public function findBy($where, $value,$single = true)
+    public function findBy($where, $value, $single = true)
     {
-        if (!$single) return $this->model->where($where, $value)->get();
+        if (!$single) {
+            return $this->model->where($where, $value)->get();
+        }
 
         return $this->model->where($where, $value)->first();
     }
